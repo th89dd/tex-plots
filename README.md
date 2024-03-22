@@ -1,6 +1,6 @@
-![version](https://img.shields.io/badge/version-0.1-blue.svg)
-![date](https://img.shields.io/badge/date-2023--06--12-green.svg)
-![status](https://img.shields.io/badge/status-development-yellow.svg)
+![version](https://img.shields.io/badge/version-1.0-blue.svg)
+![date](https://img.shields.io/badge/date-2024--03--22-green.svg)
+![status](https://img.shields.io/badge/status-published-green.svg)
 
 # How to import Plots in LaTeX
 
