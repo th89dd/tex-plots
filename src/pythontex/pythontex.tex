@@ -1,0 +1,527 @@
+%! Author = Tim Häberlein
+%! Organisation = Technische Universität Dresden, Professur Fahrzeugmechatronik
+%! Date = 20.03.2024
+
+
+% Preamble
+\documentclass[class=tudscrartcl, crop=false, cdfont=false, cd=true]{standalone}
+
+% Packages
+\usepackage{../packages}
+
+\usepackage{xspace}
+\usepackage{xcolor}
+
+\usepackage{pgfplots}
+\usepackage{pgf}
+\pgfplotsset{compat=1.18}
+
+%\setpythontexworkingdir{../src/mwe_matplotlib/pythontex}
+\setpythontexcontext{textwidth=\the\textwidth, textheight=\the\textheight}
+
+\def\mathdefault#1{#1}
+\everymath=\expandafter{\the\everymath\displaystyle}
+
+\makeatletter\@ifpackageloaded{underscore}{}{\usepackage[strings]{underscore}}\makeatother
+% logical markups
+\newcommand*{\python}{\mbox{\textsc{Python}}\xspace}
+\newcommand*{\matplotlib}{\mbox{\texttt{Matplotlib}}\xspace}
+\newcommand*{\pythontex}{\mbox{\textsc{Python}}\TeX\xspace}
+
+% listings styles
+\lstdefinestyle{latexstyle}{
+    basicstyle=\ttfamily\footnotesize,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=1em,
+    tabsize=1,
+    extendedchars=true,
+    breaklines=true,
+    keywordstyle=\color{cdblue},
+    stringstyle=\color{red},
+    identifierstyle=\color{black},
+    commentstyle=\color{cdgreen},
+    showspaces=false,
+    showstringspaces=false,
+    captionpos=b,
+    frame=lines,
+    rulecolor=\color{cdgrey},
+    xleftmargin=4em,
+    xrightmargin=2em,
+    framexleftmargin=2em,
+    aboveskip=1em,  % Abstand vor dem Codeblock
+    belowskip=1em,  % Abstand nach dem Codeblock
+    morekeywords={begin, usepackage, documentclass}
+}
+
+\lstdefinestyle{pythonstyle}{
+    language=Python,
+    backgroundcolor=\color{cdgrey!10},
+    commentstyle=\color{cddarkgreen},
+    keywordstyle=\color{cdpurple},
+    numberstyle=\tiny\color{cdgrey},
+    stringstyle=\color{cdgreen},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=1em,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=1,
+    xleftmargin=4em,                     % Einrückung von links
+%frame=l,                            % Rahmen auf der linken Seite des Listings
+%framesep=5em,                       % Abstand zwischen Rahmen und Text
+    framexleftmargin=2em,             % Abstand des Rahmens zur tatsächlichen Einrückung
+    xrightmargin=2em,
+    aboveskip=1em,  % Abstand vor dem Codeblock
+    belowskip=1em,  % Abstand nach dem Codeblock
+}
+
+\lstdefinestyle{bashstyle}{
+    backgroundcolor=\color{cdgrey},
+    commentstyle=\color{cdgreen},
+    keywordstyle=\color{cdgrey!10}\textbf,
+    numberstyle=\tiny\color{white},
+    stringstyle=\color{cdgreen},
+    basicstyle=\ttfamily\footnotesize\color{cdgrey!20},
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=1em,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=1,
+    xleftmargin=4em,                     % Einrückung von links
+%frame=l,                            % Rahmen auf der linken Seite des Listings
+%framesep=5em,                       % Abstand zwischen Rahmen und Text
+    framexleftmargin=2em,             % Abstand des Rahmens zur tatsächlichen Einrückung
+    xrightmargin=2em,
+    aboveskip=1em,  % Abstand vor dem Codeblock
+    belowskip=1em,  % Abstand nach dem Codeblock
+    morecomment=[l]{::},              % Definiert den Kommentarstil für ::
+    morekeywords={python, pip, pythontex},              % Definiert den Kommentarstil für
+}
+\lstset{
+    inputencoding=utf8,
+    extendedchars=true,
+    literate={ä}{{\"a}}1
+        {ö}{{\"o}}1
+        {ü}{{\"u}}1
+        {Ä}{{\"A}}1
+        {Ö}{{\"O}}1
+        {Ü}{{\"U}}1
+        {ß}{{\ss}}1
+}
+
+% Document
+\begin{document}
+
+    \section{Import von PGF-Plots über \matplotlib mittels \pythontex}\label{sec:import-von-pgf-plots-uber-matplotlib-mittels-pythontex}
+    \pythontex ist ein \LaTeX-Paket, welches es ermöglicht, \python-Code in \LaTeX-Dokumente einzubinden und auszuführen.
+    Dies ermöglicht den direkten Import des in \autoref{lst:plot-code} aus \autoref{sec:vergleich-von-pgf-und-pdf} erzeugten Plots.
+
+    \subsection{Vorbereitungen in \LaTeX für \pythontex}\label{subsec:vorbereitungen-in-latex-fuer-pythontex}
+    \pythontex wird mit mittels des folgendem Codes importiert:
+\begin{lstlisting}[language=TeX, style=latexstyle, caption=Einbinden von \pythontex,label={lst:pythontex-packages}]
+\usepackage{pythontex}
+\end{lstlisting}
+
+    \subsection{Vorbereitungen in Windows und \python für \pythontex}\label{subsec:vorbereitungen-in-python-fuer-pythontex}
+
+    Für die Verwendung von \python empfiehlt sich immer die Verwendung eines virtuellen Environments (venv) für jedes spezifische Projekt, da so Paket-Abhängigkeiten sauber gehalten werden können und das main-\python-Environment nicht geändert wird.
+    Die Erstellung eines venv erfolgt unter Windows mittels folgendem Befehl: \lstinline[language=bash]|python -m venv /path/to/venv|.
+
+    Im nächsten Schritt müssen relevante Pakete in dieses venv installiert werden.
+    Dazu wird das venv aktiviert und anschließend mittels des Paketmanagers pip die Pakete in dieses venv installiert.
+
+    Die \python-Umgebung mit \pythontex benötigt im vorliegenden Fall die folgenden Pakete:
+    \begin{description}
+        \item[\texttt{pygments}] für die Syntax-Highlighting und
+        \item[\texttt{matplotlib}] für die Erstellung von Plots.
+    \end{description}
+
+    Die Installation und Einrichtung kann mittels des folgenden Codes erfolgen:
+\begin{lstlisting}[language=bash, style=bashstyle, caption=Installation von \texttt{pygments} für \pythontex,label={lst:pygments-installation}]
+:: installation python venv
+python -m venv C:\Users\example_user\IdeaProjects\tex_test\venv
+:: activate venv
+C:\Users\example_user\IdeaProjects\tex_test\venv\Scripts\activate.bat
+:: install python-packages
+pip install pygments
+pip install matplotlib
+\end{lstlisting}
+
+    Der Aufruf des \pythontex Compilers ist in \autoref{lst:pythontex-compiler} im Allgemeinen dargestellt.
+    \begin{lstlisting}[language=bash, style=bashstyle, caption={Aufruf des \pythontex Compilers}, label={lst:pythontex-compiler}]
+:: Aufruf des pythontex-Compilers im allgemeinen
+pythontex --interpreter python:<path/to/venv> <tex_filename>
+\end{lstlisting}
+    Zu Begin muss jedoch auch das venv aktiviert werden, um den \pythontex-Compiler korrekt ausführen zu können.
+    Sollte zusätzlich noch ein output-directory mittels des pdflatex-Compilers angegeben sein, so muss auch der \pythontex-Compiler diesen kennen.
+    In diesem Fall empfiehlt sich die Verwendung eines kleinen Scriptes mittels eines Argumentes (\#1) für das \LaTeX-File, welches dann den \pythontex-Compiler aufruft.
+    Für den vorliegenden Fall könnte dieses Script wie folgt aussehen:
+\begin{lstlisting}[language=bash, style=bashstyle, caption=Script für den Aufruf des \pythontex-Compilers,label={lst:pythontex-start-script}]
+:: Wechsel in das output-directory des pdflatex-Compilers
+cd C:\Users\s7285521\IdeaProjects\_Diss\tex_test\out
+:: Aktivierung des venv und Aufruf des pythontex-Compilers
+..\venv\Scripts\activate.bat && pythontex --interpreter python:C:\\Users\\s7285521\\IdeaProjects\\_Diss\\tex_test\\venv\\Scripts\\python.exe %1
+\end{lstlisting}
+
+    Der typische Kompilierungsvorgang sieht dann wie folgt aus: pdflatex - pythontex - pdflatex.
+    Sollte sich im \python-Code nicht geändert haben, genügt danach ein pdflatex Durchgang.
+
+    \subsection{Einbindung und Verwendung von \pythontex in \LaTeX}\label{subsec:einbindung-und-verwendung-von-pythontex-in-latex}
+    In der Regel erfolgt die Einbindung von \pythontex in \LaTeX{} mittels der \texttt{pycode}-Umgebung.
+    Die Verwendung einer Konsolen-Umgebung wird mittels \texttt{pyconsole} realisiert.
+
+    Die Ausgabe des \autoref{lst:pythontex-verwendung} ist darunter dargestellt.
+    Weder die Konsolenumgebung noch die Inline-Konsolen-Umgebung brechen Text auf eine neue Zeile um.
+
+    \begin{lstlisting}[language=TeX, style=latexstyle,label={lst:pythontex-verwendung}, caption={\pythontex-Verwendung}]
+\documentclass[class=tudscrartcl, cdfont=false]{standalone}
+\usepackage{pythontex}
+\begin{document}
+    \python-Code kann mittels \lstinline[language=Tex, style=latexstyle]|\begin{pyconsole}| und \lstinline[language=Tex, style=latexstyle]|\end{pyconsole}|  in \LaTeX{} eingebunden und ausgefuehrt werden.
+    Dabei sowohl Ein- als auch Ausgaben dargestellt, als ob es sich um eine richtige Konsole handeln wuerde.
+\begin{pyconsole}
+import os
+os.getcwd()
+\end{pyconsole}
+    Der \python-Code innerhalb der \texttt{pyconsole}-Umgebung darf dabei nicht eingerueckt werden.
+    Mithilfe des \lstinline[language=Tex, style=latexstyle]|\pycon{}|-Befehls kann der Output auch inline dargestellt werden.
+    Inline dargestellt ist das \python-Workingdirectory: \\ \pycon{os.getcwd()}
+\end{document}
+\end{lstlisting}
+
+    \python-Code kann mittels \lstinline[language=Tex, style=latexstyle]|\begin{pyconsole}| und \lstinline[language=Tex, style=latexstyle]|\end{pyconsole}|  in  \LaTeX{} eingebunden und ausgeführt werden.
+    Dabei werden sowohl Ein- als auch Ausgaben dargestellt, als ob es sich um eine richtige Konsole handeln würde.
+\begin{pyconsole}
+import os
+os.getcwd()
+\end{pyconsole}
+    Der \python-Code innerhalb der \texttt{pyconsole}-Umgebung darf dabei nicht eingerückt werden.
+    Mithilfe des \lstinline[language=Tex, style=latexstyle]|\pycon{}|-Befehls kann der Output auch inline dargestellt werden.
+    Inline dargestellt ist das \python-Workingdirectory: \\ \pycon{os.getcwd()}
+
+    Bei der Verwendung von Variablen ist darauf zu achten, dass diese nur in der jeweiligen Umgebung definiert sind und verwendet werden können.
+    Definieren wir noch eine Variable \texttt{a} in einer \texttt{pycode}-Umgebung, so ist diese nur innerhalb dieser Umgebung definiert und kann nicht in einer \texttt{pyconsole}-Umgebung verwendet werden.
+
+\begin{lstlisting}[language=TeX, style=latexstyle, caption={\pythontex-Verwendung von Variablen}, label={lst:pythontex-variables}]
+\begin{pycode}
+a = 3
+\end{pycode}
+\begin{pyconsole}
+a = 2
+a
+\end{pyconsole}
+\end{lstlisting}
+
+    \begin{pycode}
+a = 3
+    \end{pycode}
+    \begin{pyconsole}
+a = 2
+a
+    \end{pyconsole}
+
+    Nach dem Aufruf des Codes aus \autoref{lst:pythontex-variables} wird die \texttt{pyconsole}-Umgebung ausgegeben. Da es in der \texttt{pycode}-Umgebung keine Ausgabe (z.\@\,B.\@ einen print-Befehl) gibt, wird diese nicht dargestellt.
+    Beide Variablen können wir jetzt in der jeweiligen in-Line-Umgenbung verwenden:
+    \begin{itemize}
+        \item \lstinline[language=TeX, style=latexstyle]|\pycon{a*2}|: \pycon{a*2}
+        \item \lstinline[language=TeX, style=latexstyle]|\py{a*2}|: \py{a*2}
+    \end{itemize}
+
+    \subsection{Übergabe von Variablen zwischen \LaTeX{} und \python}\label{subsec:uebergabe-von-variablen-zwischen-latex-und-python}
+    Die Übergabe von Variablen zwischen \LaTeX{} und \python erfolgt mittels:
+    \begin{lstlisting}[language=TeX, style=latexstyle, caption={Übergabe von Variablen zwischen \LaTeX{} und \python}, label={lst:pythontex-variable-passing}]
+\documentclass[class=tudscrartcl, cdfont=false]{standalone}
+\usepackage{pythontex}
+\setpythontexcontext{textwidth=\the\textwidth, textheight=\the\textheight}
+    \begin{document}
+        \py{pytex.context['textwidth']} und \py{pytex.context.textheight} sind dabei die Variablen, die von \LaTeX{} an \python uebergeben werden.
+        Und können in mittels vorhandener Funktionen in Inches umgerechnet werden: \py{pytex.pt_to_in(pytex.context['textwidth'])}.
+        Der Rückgabetyp ist dann \py{type(pytex.pt_to_in(pytex.context['textwidth']))}.
+    \end{document}
+\end{lstlisting}
+
+    \py{pytex.context['textwidth']} und \py{pytex.context.textheight} sind dabei die Variablen, die von \LaTeX{} an \python übergeben werden.
+    Und können in mittels vorhandener Funktionen in Inches umgerechnet werden: \py{pytex.pt_to_in(pytex.context['textwidth'])}.
+    Der Rückgabetyp ist dann \py{type(pytex.pt_to_in(pytex.context['textwidth']))}.
+
+    Dabei muss der Aufruf von \lstinline[language=TeX, style=latexstyle]|\setpythontexcontext{}| in der Präambel erfolgen.
+    Die Variablen stehen dann ich allen \texttt{pycode}-Umgebungen zur Verfügung.
+
+    \subsection{Sessions}\label{subsec:sessions}
+    Sofern der \texttt{pycode}-Umgebung kein optionales Argument als Session-Name übergeben wird (s. \autoref{lst:pythontex-sessions}), laufen alle Umgebungen nacheinander ab und können auf die gleichen Variablen zugreifen.
+    Soll spezifischer Code für alle Sessions ausgeführt werden, so kann dies in der \texttt{pythontexcustomcode}-Umgebung erfolgen (s. \autoref{lst:pythontex-custom-code-env}).
+
+    \begin{lstlisting}[language=TeX, style=latexstyle, caption={\pythontex-Sessions},label={lst:pythontex-sessions}]
+\begin{pycode}[<session-name>]
+    <code>
+\end{pycode}
+\end{lstlisting}
+
+    \begin{lstlisting}[language=TeX, style=latexstyle, caption={\pythontex-Costum Code Environment},label={lst:pythontex-custom-code-env}]
+\begin{pythontexcustomcode}{py}
+    <code>
+\end{pythontexcustomcode}
+\end{lstlisting}
+
+    \subsection{Working-Directory}\label{subsec:working-directory}
+    Bei der Verwendung von \pythontex bietet es sich an, dass Working-Directory von \python in das Verzeichnis zu setzen, in dem sich die \LaTeX{}-Datei befindet und nicht im output-directory des pdflatex-Compilers zu arbeiten.
+    So erfolgen imports von diesem Verzeichnis und outputs werden auch dort gespeichert.
+    Gerade bei der Erstellung von Plot mittels \matplotlib ist dies von Vorteil, da der Output direkt im Verzeichnis der \LaTeX-Datei liegt und nicht erst in das output-directory gewechselt werden muss.
+    Der Wechsel kann dabei innerhalb der \texttt{pycode}-Umgebung  mittels \python oder durch den \LaTeX{}-Befehl \lstinline[language=TeX, style=latexstyle]|\setpythontexworkingdir{<path>}| erfolgen.
+    Ein Beispiel ist in \autoref{lst:pythontex-set-workingdir} dargestellt.
+
+\begin{lstlisting}[language=TeX, style=latexstyle, caption={Setzen des Working-Directory für \pythontex},label={lst:pythontex-set-workingdir}]
+\documentclass[class=tudscrartcl, cdfont=false]{standalone}
+\usepackage{pythontex}
+\setpythontexworkingdir{../src/mwe_matplotlib/pythontex}
+\begin{document}
+    \begin{pyconsole}
+    import os
+    os.getcwd()
+    \end{pyconsole}
+\end{document}
+\end{lstlisting}
+
+    Da diese Einstellung jedoch nur in der Präambel erfolgen kann, bietet es sich diese Option für komplexere Projekte mit mehreren \texttt{.tex}-Dateien nicht an.
+    Der \python-Compiler wird nur einmal aufgerufen und hat dementsprechend dann für alle  Files das gleiche \python-Working-directory.
+    In diesem Fall bietet es sich an, das Working-Directory innerhalb der \texttt{pycode}-Umgebung zu setzen oder alle Dateien im out-directory von pdflatex zu halten.
+    Für den Fall, dass das \python-Working-directory innerhalt der \texttt{pycode}-Umgebung gesetzt werden soll, ist dies in \autoref{lst:pythontex-workingdir} dargestellt.
+
+\begin{lstlisting}[language=TeX, style=latexstyle, caption={Setzen des Working-Directory für \pythontex durch \python},label={lst:pythontex-workingdir}]
+\documentclass[class=tudscrartcl, cdfont=false]{standalone}
+\usepackage{pythontex}
+\begin{document}
+    \begin{pyconsole}
+import os
+os.getcwd()
+os.chdir('../src/mwe_matplotlib/pythontex')
+os.getcwd()
+    \end{pyconsole}
+\end{document}
+\end{lstlisting}
+
+    Die Ausgabe sieht dann wie folgt aus:
+    \begin{pyconsole}
+import os
+os.getcwd()
+os.chdir('../src/mwe_matplotlib/pythontex')
+os.getcwd()
+    \end{pyconsole}
+
+    \subsection{Einbindung in \LaTeX{}\label{subsec:pythontex-einbindung-in-latex}}
+    Ein Beispiel-Plot mittels \matplotlib und \pythontex ist in \autoref{lst:pythontex-pgf-plot} dargestellt.
+
+    \subsection{Verweise}\label{subsec:verweise-pythontex}
+    Die Informationen wurden folgenden Quellen entnommen:
+    \begin{itemize}
+        \item \href{https://iopscience.iop.org/article/10.1088/1749-4699/8/1/014010}{PythonTeX: reproducible documents with LaTeX, Python, and more}
+        Paper des Autors (Geoffrey M Poore) von 2015 in Computational Science \& Discovery, Volume 8, Number 1, DOI: 10.1088/1749-4699/8/1/014010.
+        Übersicht zur Verwendung von \pythontex.
+
+        \item \href{https://github.com/gpoore/pythontex}{GitHub \pythontex}
+        offizielle GitHub-Seite von \pythontex.
+
+        \item \href{https://ctan.org/pkg/pythontex}{CTAN \pythontex}
+        offizielle Paketdokumentation.
+
+        \item \href{https://punkt-akademie.de/wp-content/uploads/2018/10/PythonTeX.pdf}{Dokumentenautomation mit PythonTEX}
+        Vorstellung und Beispiele zu \pythontex von Karsten Brodmann, 2018.
+    \end{itemize}
+
+    \section{Vergleich PGF und \pythontex Plots}\label{sec:vergleich-pgf-und-pythontex-plots}
+    In diesem Abschnitt wird der Vergleich von PGF-Plots und \pythontex-Plots dargestellt.
+    Im ersten Schritt werden zuvor jedoch noch 2 verschiedene Möglichkeiten vorgestellt, wie ein Integration in \LaTeX{} erfolgen kann.
+
+    \subsection{Einbindung über \pythontex und \LaTeX}\label{subsec:einbindung-ueber-pythontex-und-latex}
+
+    Die Einbindung des PGF-Plots mittels \pythontex ist in dargestellt \autoref{lst:pythontex-pgf-plot}.
+    Dabei wird der Plot mittels \matplotlib durch \pythontex direkt zur Laufzeit erstellt und als PGF-Datei gespeichert.
+    Der \python-Code für die Plot Funktion ist in \texttt{PlotBase.py} enthalten.
+    Der Inhalt der Datei ist \cref{lst:PlotBase} zu entnehmen.
+    Anschließend wird diese Datei in das \LaTeX-Dokument eingebunden.
+    Das Ergebnis ist in \cref{fig:pythontex-pgf-plot-einer-sinus-funktion} dargestellt.
+
+    \begin{lstlisting}[language=TeX, style=latexstyle, caption={Einbindung von PGF-Plots mittels \pythontex}, label={lst:pythontex-pgf-plot}]
+\begin{pycode}[plot1]
+import os, sys
+os.chdir('../src/mwe_matplotlib/pythontex')
+sys.path.append(os.getcwd())
+
+from PlotBase import plot_sinus
+filename = 'sinus_07.pgf'
+plot_sinus(0.7*pytex.pt_to_in(pytex.context['textwidth']), filename)
+#pytex.add_created(filename)
+\end{pycode}
+\begin{figure}[htb!]
+    \centering
+    %\setlength{\figurewidth}{0.8\columnwidth}% Skalierung der Breite
+    \subimport{}{sinus_07.pgf}
+    \caption{\pythontex PGF-Plot einer Sinus-Funktion.}
+\end{figure}
+\end{lstlisting}
+
+    \begin{pycode}
+import os, sys
+os.chdir('../src/mwe_matplotlib/pythontex')
+sys.path.append(os.getcwd())
+
+from PlotBase import plot_sinus
+filename = 'sinus_07.pgf'
+plot_sinus(0.7*pytex.pt_to_in(pytex.context['textwidth']), filename)
+#pytex.add_created(filename)
+    \end{pycode}
+
+    \begin{figure}[htb!]
+        \centering
+        %\setlength{\figurewidth}{0.8\columnwidth}% Skalierung der Breite
+        %\includegraphics{sinus_09.pdf}
+        \input{sinus_07.pgf}
+        %\caption{PGF-Plot einer Sinus-Funktion mit \pythontex.}
+        \label{fig:pythontex-pgf-plot-einer-sinus-funktion}
+    \end{figure}
+
+    Sofern ein \texttt{.pgf}-Datei verwendet wird, besteht das Problem darin, dass beim ersten Durchlauf von \emph{pdflatex} noch keine Datei existiert.
+    Diese wird erst zur Laufzeit von \emph{pythontex} erstellt.
+    Daher muss vorher eine Datei mit dem gleichen Namen und der Endung \texttt{.pgf} erstellt werden, damit \emph{pdflatex} diese korrekt einbinden kann.
+    Alternativ kann der export über \texttt{.pdf} erfolgen.
+    Durch die Einbindung mittels \texttt{\textbackslash includgraphics} wird ein Platzhalter eingebunden und kann somit kann \emph{pdflatex} ohne Fehler durchlaufen.
+
+    \subsection{Direkte Einbindung über \pythontex}\label{subsec:direkte-einbindung-ueber-pythontex}
+    Eine weitere Alternative wäre die Einbindung der Grafik direkt in der \texttt{pycode}-Umgebung, wie es in \cref{lst:pythontex-pgf-plot-direkt} dargestellt ist.
+    Dieser Code erstellt den Plot direkt zur Laufzeit und bindet diesen ein (s. \cref{fig:pythontex-pgf-plot-einer-sinus-funktion-direkt-aus-pythontex}).
+
+    \begin{lstlisting}[language=TeX, style=latexstyle, caption={direkte Einbindung von PGF-Plots mittels \pythontex}, label={lst:pythontex-pgf-plot-direkt}]
+\begin{pycode}[plot2]
+import os, sys
+os.chdir('../src/mwe_matplotlib/pythontex')
+sys.path.append(os.getcwd())
+
+from PlotBase import plot_sinus
+scalefactor = 0.9
+filename = 'sinus_{}.pgf'.format(scalefactor)
+plot_sinus(scalefactor*pytex.pt_to_in(pytex.context['textwidth']), filename)
+pytex.add_created(filename)
+print(r"\begin{figure}")
+print(r"\centering")
+print(r"\subimport{{}}{{{name}}}".format(name=filename))
+print(r"\caption{\pythontex PGF-Plot einer Sinus-Funktion direkt aus \pythontex.}")
+print(r"\label{fig:pythontex-pgf-plot-einer-sinus-funktion-direkt-aus-pythontex}")
+print(r"\end{figure}")
+\end{pycode}
+\end{lstlisting}
+
+\begin{pycode}[plot2]
+import os, sys
+os.chdir('../src/mwe_matplotlib/pythontex')
+sys.path.append(os.getcwd())
+
+from PlotBase import plot_sinus
+scalefactor = 0.9
+filename = 'sinus_{}.pgf'.format(scalefactor)
+plot_sinus(scalefactor*pytex.pt_to_in(pytex.context['textwidth']), filename)
+pytex.add_created(filename)
+print(r"\begin{figure}[htbp!]")
+print(r"\centering")
+print(r"\subimport{{}}{{{name}}}".format(name=filename))
+print(r"\caption{\pythontex PGF-Plot einer Sinus-Funktion direkt aus \pythontex.}")
+print(r"\label{fig:pythontex-pgf-plot-einer-sinus-funktion-direkt-aus-pythontex}")
+print(r"\end{figure}")
+    \end{pycode}
+
+
+    \subsection{Vergleich \pythontex und PGFPlots}\label{subsec:vergleich-von-pgf-und-pythontex}
+    Der Vergleich von PGF-Plots und \pythontex-Plots ist in \cref{fig:pgf-pythontex-comparison} dargestellt.
+    Dabei wird links der Plot mittels PGFPlots direkt erstellt und rechts der Plot mittels \pythontex und \matplotlib erstellt.
+    Unterschiede ergeben sich vorallem in Umfang des Codes und der Art und Weise der Einbindung. Dies ist mit \matplotlib und \pythontex deutlich komplexer und aufwänder.
+    Der eigentliche Umfang zur Erstellung des Plotes ist mit PGFPlots im gewählten Beispiel (\cref{lst:pgf-code}) geringer als mit \matplotlib (\cref{lst:plot-code}).
+    Auch die eigentliche Einbindung in das Dokument fällt geringer aus (\cref{lst:pgf-pythontex-vergleich}).
+    Weiterhin ist zu erwähnen, dass für unterschiedliche Skalierungen bei \pythontex mehrere Dateien erstellt werden müssen.
+
+    \begin{lstlisting}[language=TeX, style=latexstyle, caption={Code zum Vergleich von PGFPlots und \pythontex}, label={lst:pgf-pythontex-vergleich}]
+\begin{figure}[hb!]
+    \begin{minipage}[b]{0.45\textwidth}
+        \centering
+        \setlength{\figurewidth}{\columnwidth}
+        \subimport{../}{pgf_sinus.tex}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.45\textwidth}
+    \centering
+        \begin{pycode}[plot3]
+import os, sys
+os.chdir('../src/mwe_matplotlib/pythontex')
+sys.path.append(os.getcwd())
+
+from PlotBase import plot_sinus
+scalefactor = 1
+filename = 'sinus_{}.pgf'.format(scalefactor)
+plot_sinus(scalefactor*pytex.pt_to_in(pytex.context['textwidth']), filename)
+pytex.add_created(filename)
+
+print(r"\subimport{{}}{{{name}}}".format(name=filename))
+        \end{pycode}
+    \end{minipage}
+    \caption{Vergleich von GPF direkt (links) und \pythontex (rechts).}\label{fig:pgf-pythontex-comparison}
+\end{figure}
+\end{lstlisting}
+
+    \begin{figure}[hb!]
+        \begin{minipage}[b]{0.45\textwidth}
+            \centering
+            \setlength{\figurewidth}{\columnwidth}
+            \subimport{../}{pgf_sinus.tex}
+        \end{minipage}
+        \hfill
+        \begin{minipage}[b]{0.45\textwidth}
+            \centering
+    \begin{pycode}[plot3]
+import os, sys
+os.chdir('../src/mwe_matplotlib/pythontex')
+sys.path.append(os.getcwd())
+
+from PlotBase import plot_sinus
+scalefactor = 1
+filename = 'sinus_{}.pgf'.format(scalefactor)
+plot_sinus(scalefactor*pytex.pt_to_in(pytex.context['textwidth']), filename)
+pytex.add_created(filename)
+
+print(r"\subimport{{}}{{{name}}}".format(name=filename))
+    \end{pycode}
+        \end{minipage}
+        \caption{Vergleich von GPF direkt (links) und \pythontex (rechts).}\label{fig:pgf-pythontex-comparison}
+    \end{figure}
+
+    \section{Fazit}
+    Die Einbindung von PGF-Plots mittels \pythontex wurde in \vref{sec:vergleich-pgf-und-pythontex-plots} und \vref{sec:import-von-pgf-plots-uber-matplotlib-mittels-pythontex}  gezeigt und bietet eine gute Möglichkeit, \python-Code in \LaTeX{} einzubinden.
+    Vor allem bei speziellen Grafiken, die bereits mittels \python erstellt wurden, bietet sich diese Möglichkeit an.
+    Beispielsweise können so Map-Plots oder ähnliches integriert werden, welche über PGFPlots nicht oder nur sehr aufwändig erstellt werden können.
+
+    Weiterhin kann \pythontex für die Integration von Berechnungen oder zur Datenanbindung mittels Datenbankinterfaces aus \python direkt in das \LaTeX{}-Dokument genutzt werden.
+    Dies ermöglicht große Automatisierungsgrade für die Erstellung von Dokumenten. Auch die Integration des \python-Paketes \texttt{SymPy} ist ein mächtiges Werkzeug.
+    Es ermöglicht die direkten Einbindung von Symbolrechnungen in \LaTeX{} und ist sogar in \pythontex mittels spezieller Befehle und Umgebungen integriert.
+
+    Die Einbindung von aus \python heraus gespeicherten \matplotlib-Plots ist über die Berechnung der Textbreite auch möglich.
+    Diese muss jedoch immer wieder neu erfolgen, sobald sich was am Layout des Dokumentes ändert.
+    Aus diesem Grund ist diese Variante nur bedingt empfehlenswert.
+
+    \Cref{sec:vergleich-pgf-und-pythontex-plots} zeigt, dass PGFPlots im Falle des gewählten Beispiels deutlich weniger Aufwand bedeuten und die Integration in \LaTeX{} geringeren Aufwand bedeutet.
+    Diese Methode ist daher zu bevorzugen.
+
+    \section{Anhang: PlotBase.py}\label{subsec:plotbase.py}
+
+    \lstinputlisting[language=Python, style=pythonstyle, caption={Inhalt der PlotBase.py}, label={lst:PlotBase}]{PlotBase.py}
+
+
+\end{document}

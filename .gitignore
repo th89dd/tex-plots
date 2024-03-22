@@ -1,0 +1,5 @@
+# intellij-stuff
+/.idea
+
+# latex output dir
+/out

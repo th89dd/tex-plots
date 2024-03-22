@@ -1,0 +1,151 @@
+%! Author = Tim Häberlein
+%! Organisation = Technische Universität Dresden, Professur Fahrzeugmechatronik
+%! Date = 15.03.2024
+
+
+% Preamble
+%\RequirePackage[]{fix-tudscrfonts}
+\documentclass[ngerman, cd=true, cdfont=false, titlepage=true, cdtitle=true]{tudscrartcl}
+
+% Packages
+
+%\usepackage{xspace}
+%\usepackage{xcolor}
+%
+%\usepackage{pgfplots}
+%\usepackage{pgf}
+%\pgfplotsset{compat=1.18}
+%\input{packages}
+\usepackage{packages}
+
+\def\mathdefault#1{#1}
+\everymath=\expandafter{\the\everymath\displaystyle}
+
+\makeatletter\@ifpackageloaded{underscore}{}{\usepackage[strings]{underscore}}\makeatother
+
+%\setpythontexworkingdir{../src/mwe_matplotlib/pythontex}
+\setpythontexcontext{textwidth=\the\textwidth, textheight=\the\textheight}
+
+% logical markups
+\newcommand*{\python}{\mbox{\textsc{Python}}\xspace}
+\newcommand*{\matplotlib}{\mbox{\texttt{Matplotlib}}\xspace}
+\newcommand*{\pythontex}{\mbox{\textsc{Python}}\TeX\xspace}
+
+% picture width
+\newlength{\figurewidth}
+%\setlength{\figurewidth}{0.8\textwidth}
+
+\crefname{listing}{Quelltext}{Quelltexte}
+\Crefname{listing}{Quelltext}{Quelltexte}
+
+% listings styles
+\lstdefinestyle{latexstyle}{
+    basicstyle=\ttfamily\footnotesize,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=1em,
+    tabsize=1,
+    extendedchars=true,
+    breaklines=true,
+    keywordstyle=\color{cdblue},
+    stringstyle=\color{red},
+    identifierstyle=\color{black},
+    commentstyle=\color{cdgreen},
+    showspaces=false,
+    showstringspaces=false,
+    captionpos=b,
+    frame=lines,
+    rulecolor=\color{cdgrey},
+    xleftmargin=4em,
+    xrightmargin=2em,
+    framexleftmargin=2em,
+    aboveskip=1em,  % Abstand vor dem Codeblock
+    belowskip=1em,  % Abstand nach dem Codeblock
+    morekeywords={begin, usepackage, documentclass}
+}
+\lstdefinestyle{pythonstyle}{
+    backgroundcolor=\color{cdgrey!10},
+    commentstyle=\color{cddarkgreen},
+    keywordstyle=\color{cdpurple},
+    numberstyle=\tiny\color{cdgrey},
+    stringstyle=\color{cdgreen},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=1em,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=1,
+    xleftmargin=4em,                     % Einrückung von links
+%frame=l,                            % Rahmen auf der linken Seite des Listings
+%framesep=5em,                       % Abstand zwischen Rahmen und Text
+    framexleftmargin=2em,             % Abstand des Rahmens zur tatsächlichen Einrückung
+    xrightmargin=2em,
+    aboveskip=1em,  % Abstand vor dem Codeblock
+    belowskip=1em,  % Abstand nach dem Codeblock
+}
+
+\lstdefinestyle{bashstyle}{
+    backgroundcolor=\color{cdgrey},
+    commentstyle=\color{cdgreen},
+    keywordstyle=\color{cdgrey!10}\textbf,
+    numberstyle=\tiny\color{white},
+    stringstyle=\color{cdgreen},
+    basicstyle=\ttfamily\footnotesize\color{cdgrey!20},
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=1em,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=1,
+    xleftmargin=4em,                     % Einrückung von links
+%frame=l,                            % Rahmen auf der linken Seite des Listings
+%framesep=5em,                       % Abstand zwischen Rahmen und Text
+    framexleftmargin=2em,             % Abstand des Rahmens zur tatsächlichen Einrückung
+    xrightmargin=2em,
+    aboveskip=1em,  % Abstand vor dem Codeblock
+    belowskip=1em,  % Abstand nach dem Codeblock
+    morecomment=[l]{::},              % Definiert den Kommentarstil für ::
+    morekeywords={python, pip, pythontex},              % Definiert den Kommentarstil für
+}
+\lstset{
+    inputencoding=utf8,
+    extendedchars=true,
+    literate={ä}{{\"a}}1
+        {ö}{{\"o}}1
+        {ü}{{\"u}}1
+        {Ä}{{\"A}}1
+        {Ö}{{\"O}}1
+        {Ü}{{\"U}}1
+        {ß}{{\ss}}1
+}
+
+
+\title{Einbindungen von Plots mittels PGFPlots, \matplotlib und \pythontex}
+\author{Tim Häberlein}
+\date{\today}
+\faculty{Fakultät für Verkehrswissenschaften "`Friedrich List"'}
+\institute{Institut für Autombiltechnik Dresden -- IAD}
+\chair{Professur für Fahrzeugmechatronik}
+% Document
+\begin{document}
+    \maketitle
+
+    \tableofcontents
+    \clearpage
+
+    \import{imported/}{imported}
+    \input{pgf_plain}
+    \import{pythontex/}{pythontex}
+
+
+\end{document}

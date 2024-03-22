@@ -1,0 +1,52 @@
+\RequirePackage[english, main=ngerman]{babel}  %% rechtschreibpaket
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}  %% textinterpretation
+\RequirePackage[german]{isodate}
+\RequirePackage[babel]{microtype}
+
+\RequirePackage{lmodern}  %% Die klassischen LaTeX-Schriften (Computer Modern) wesentlich verbessert
+\RequirePackage[inline]{enumitem}  %% paket für aufzählungen (auch inline mit * - verwendbar)
+\RequirePackage{savefnmark}  %% paket um fussnoten zu speichern + mehrfach verwenden zu können
+\RequirePackage[math]{blindtext}  %% paket um blindtext zu erzeugen \bildtext[Anzahl_Abschnitte] %% oder \blindlist{env}[number_items]
+\RequirePackage{amsmath, amssymb}  %% Pakete für Mathematikmodus
+
+\RequirePackage{xspace}  %% Paket für Leerzeichen
+\RequirePackage[babel]{csquotes}  %% Paket für Anführungszeichen
+
+% Packages für Tabellen
+\RequirePackage{multirow}  %% paket für tabellen
+\RequirePackage{diagbox}
+\RequirePackage{array}  %% paket für Spaltenanordnung
+\RequirePackage{tabularx}  %% autom. umbrochene Tabellen
+\RequirePackage{booktabs}  %% linien zB für tabellen
+\RequirePackage{longtable}  %% mehrseitige tabellen
+\RequirePackage{ltxtable}  %% tabelle %% mehrseitige tabellen autom. umgebrochen -> evtl. mit csv verbinden
+
+% Packages für Grafiken
+\RequirePackage{standalone}  %% paket um kompilierbare Tikz-Grafiken einzubinden, header und doc-umgebung wird entfernt
+\RequirePackage{graphicx}  %% paket um Grafiken einzubinden
+\RequirePackage{subfig}  %% paket um mehrere Grafiken als Subs einzubinden
+\RequirePackage{tikz}  %% paket um TeX-Grafiken einzub
+\RequirePackage{import}
+\usetikzlibrary{calc, math, positioning, shapes.callouts, arrows, arrows.meta, tikzmark, decorations.pathreplacing}
+
+\RequirePackage{pgfplots}
+\RequirePackage{pgf}
+\pgfplotsset{compat=1.18}
+\RequirePackage{pythontex}
+
+% Code
+\RequirePackage{listings}  %% paket um code einzubinden
+
+\RequirePackage{varioref}  %% folgende 3 Pakete sind für Querverweise, immer in dieser reihenfolge einbinden
+\RequirePackage[%hidelinks  ## remove link&border color
+    colorlinks=true,
+    linkcolor=cddarkblue, %blue!50!black,
+    citecolor=cddarkgreen, %green!50!black,
+    urlcolor=cdblue,%green!40!black,
+    bookmarks=true, bookmarksopen=true, bookmarksopenlevel=1, bookmarksnumbered=true
+]{hyperref}  %% als 2. einbinden
+\RequirePackage[nameinlink, noabbrev, sort]{cleveref}  %% als 3. einbinden
+
+
+

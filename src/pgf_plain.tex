@@ -1,0 +1,158 @@
+%! Author = Tim Häberlein
+%! Organisation = Technische Universität Dresden, Professur Fahrzeugmechatronik
+%! Date = 19.03.2024
+
+
+% Preamble
+\documentclass[class=tudscrartcl, cdfont=false, cd=true, crop=false]{standalone}
+
+% Packages
+\usepackage{packages}
+
+\usepackage{pgfplots}
+\usepackage{pgf}
+\pgfplotsset{compat=1.9}
+
+\def\mathdefault#1{#1}
+\everymath=\expandafter{\the\everymath\displaystyle}
+
+\makeatletter\@ifpackageloaded{underscore}{}{\usepackage[strings]{underscore}}\makeatother
+
+% listings styles
+\lstdefinestyle{latexstyle}{
+    basicstyle=\ttfamily\footnotesize,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=1em,
+    tabsize=1,
+    extendedchars=true,
+    breaklines=true,
+    keywordstyle=\color{cdblue},
+    stringstyle=\color{red},
+    identifierstyle=\color{black},
+    commentstyle=\color{cdgreen},
+    showspaces=false,
+    showstringspaces=false,
+    captionpos=b,
+    frame=lines,
+    rulecolor=\color{cdgrey},
+    xleftmargin=4em,
+    xrightmargin=2em,
+    framexleftmargin=2em,
+    aboveskip=1em,  % Abstand vor dem Codeblock
+    belowskip=1em,  % Abstand nach dem Codeblock
+}
+
+\newlength{\figurewidth}
+%newlength{\figureheight}
+\setlength{\figurewidth}{0.8\textwidth}
+%\setlength{\figureheight}{0.618\figurewidth}
+
+% Document
+\begin{document}
+    \section{Import von direkten PGF-Plots}\label{sec:import-von-direkten-pgf-plots}
+
+    PGF-Plots ist ein Paket für \LaTeX und dient der Erstellung von 2D und 3D Plots.
+    Es ist in der Lage, die Plots direkt in \LaTeX zu erstellen und zu rendern und greift dabei auf \texttt{TikZ} zurück.
+
+    \subsection{Vorbereitungen in \LaTeX}\label{subsec:vorbereitungen-in-latex}
+
+    Um einen PGF-Plot in \LaTeX zu erstellen, müssen die notwendigen Pakete eingebunden werden:
+    \begin{lstlisting}[language=TeX, style=latexstyle, caption=Einbinden der notwendigen Pakete für PGF-Plots,label={lst:pgf-packages}]
+\usepackage{packages}
+
+\usepackage{pgfplots}
+\usepackage{pgf}
+\pgfplotsset{compat=1.9}
+    \end{lstlisting}
+
+    \subsection{Einbindung in \LaTeX}\label{subsec:einbindung-in-latex2}
+    Die Einbindung eines PGF-Plots in \LaTeX kann über folgenden Code erfolgen:
+    \begin{lstlisting}[language=TeX, style=latexstyle, caption=Einbinden eines PGF-Plots in \LaTeX,label={lst:direct-pgf-include}]
+\begin{figure}[htb]
+    \centering
+    \setlength{\figurewidth}{0.8\columnwidth}% Skalierung der Breite
+    \subimport{}{pgf_sinus.tex}
+    \caption{Ein direkter PGF-Plot einer Sinus-Funktion.}
+    \label{fig:direkter-pgf-plot-einer-sinus-funktion}
+\end{figure}
+    \end{lstlisting}
+
+    Dabei kann über den \lstinline[language=TeX, style=latexstyle]|\setlength{\figurewidth}{0.8\columnwidth}|-Befehl die Breite des Plots skaliert werden, da die erstellte Länge im Rahmen des
+    PGF-Plots (s. \autoref{lst:pgf-code} Zeile 3) verwendet wird.
+
+    \subsection{PGF-Plot}\label{subsec:sinus-funktion}
+
+    Folgender Code wurde verwendet, um den Sinus-Plot in \vref{fig:direkter-pgf-plot-einer-sinus-funktion} zu erstellen:
+    \begin{lstlisting}[language=TeX,label={lst:pgf-code}, style=latexstyle, caption=Code für einen Simus-Plot mit pgf]
+\begin{tikzpicture}
+    \begin{axis}[
+        width=\figurewidth, height=0.618\figurewidth,
+        axis lines=middle,
+        axis line style={-latex},
+        grid=major, %both
+        major grid style={cdgray},
+        minor grid style={cdgrey!25},
+        title=Sinus-Funktion,
+        xlabel={$x$},
+        ylabel={$y$},
+        ymin=-1, ymax=1, minor y tick num=1,
+        domain=-2*pi:2*pi,
+        samples=100,
+        xtick={-2*pi, -pi, 0, pi, 2*pi},
+        xticklabels={$-2\pi$, $-\pi$, $0$, $\pi$, $2\pi$},
+        ytick={-1, -0.5, 0, 0.5, 1},
+        legend pos=north east,
+        ]
+        \addplot [cddarkblue, very thick]
+            {sin(deg(x))};
+        \addlegendentry{$f(x) = \sin(x)$}
+    \end{axis}
+\end{tikzpicture}
+    \end{lstlisting}
+
+    \begin{figure}[htb!]
+        \centering
+        \setlength{\figurewidth}{0.8\columnwidth}% Skalierung der Breite
+        \subimport{}{pgf_sinus.tex}
+        \caption{Ein direkter PGF-Plot einer Sinus-Funktion.}
+        \label{fig:direkter-pgf-plot-einer-sinus-funktion}
+    \end{figure}
+
+    \subsection{Vergleich direkter PGF und \texttt{Matplotlib} PGF Plot }\label{subsec:vergleich-direkter-pgf-und-matplotlib-pgf-plot}
+
+    \vref{fig:pgf-pgf-comparison} zeit den Vergleich der beiden PGF-Varianten.
+    Natürlich ist ein kleiner Unterschied im Design zu erkennen (Pfeilspitzen, Schriftgrößen etc.).
+    Die Schriftgrößen werden in Matplotlib absolut festgesetzt, wären der direkte PGF-Plot die Schriftgrößen des umgebenden Dokuments verwendet.
+    Zusätzlich muss für die Einbindung des PGF-Plots über \texttt{Matplotlib} ein neuer Code generiert werden, der die Abbildung skaliert, da alles über fixe Längen erstellt wurde (s. \vref{subsec:bestimmung-der-bildgroesse}).
+
+    \begin{figure}[htb!]
+        \begin{minipage}[b]{0.45\textwidth}
+            \centering
+            \setlength{\figurewidth}{\columnwidth}
+            \subimport{}{pgf_sinus.tex}
+        \end{minipage}
+        \hfill
+        \begin{minipage}[b]{0.45\textwidth}
+            \centering
+            \input{imported/sinus_045.pgf}
+        \end{minipage}
+        \caption{Vergleich von GPF direkt (links) und PGF über \texttt{Matplotlib} (rechts).}\label{fig:pgf-pgf-comparison}
+    \end{figure}
+
+    \subsection{Verweise}\label{subsec:verweise-pgf}
+    \begin{minipage}{\textwidth}
+        Die Informationen wurden folgenden Quellen entnommen:
+        \begin{itemize}
+            \item \href{https://blog.timodenk.com/exporting-matplotlib-plots-to-latex/}{Exporting Matplotlib Plots to LaTeX}
+            beschreibt die Einbindung anhand eines einfachen Beispiels.
+
+            \item \href{https://ctan.org/pkg/pgfplots?lang=de}{CTAN PGFPlots}
+            CTAN (Comprehensive TEX Archive Network) Website zu PGFPlots - offizielle Paketdokumentation.
+            \item \href{https://docs.freitagsrunde.org/Veranstaltungen/techtalk/2016/slides-plotting-2016-02-12.pdf}{Grafiken in LATEX mit TikZ und PGFPLOTS}
+            Vorstellung von TikZ und PGFPlots anhand einer Präsentation von Patrick Schulz, 2016.
+        \end{itemize}
+    \end{minipage}
+
+\end{document}
